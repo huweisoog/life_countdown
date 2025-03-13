@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人生倒计时</title>
+    <style>
+        /* 全局样式：设置页面背景和字体 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f7; /* 页面背景色，浅灰 */
+            margin: 0;
+            padding: 20px;
+            color: #1d1d1f; /* 文本颜色，深灰 */
+        }
+
+        /* 主容器样式 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgb(147, 188, 116); /* 容器背景色 */
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 标题样式 */
+        .title { text-align: center; margin-bottom: 30px; }
+        h1 { font-size: 28px; margin: 0; font-weight: 600; }
+        h2 { font-size: 18px; margin: 5px 0 0; color: #6e6e73; font-weight: 400; }
+
+        /* 输入区域样式 */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #6e6e73; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        /* 按钮样式 */
+        button {
+            background: #0071e3; /* 按钮背景色，蓝色 */
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        button:hover { background: #0077ed; /* 按钮悬停色，稍亮的蓝色 */ }
+
+        /* 进度条区域样式 */
+        .progress-section { margin: 20px 0; display: flex; align-items: center; gap: 10px; position: relative; }
+        .progress-wrapper {
+            flex-grow: 1;
+            border: 1px solid #000000; /* 进度条边框颜色，黑色 */
+            border-radius: 4px;
+            background: #f5f5f7; /* 进度条背景色，浅灰 */
+            padding: 4px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #0071e3; /* 【进度条填充色】已用时间的颜色，蓝色 */
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        #progressText { font-size: 14px; color: #6e6e73; white-space: nowrap; }
+
+        /* 格子容器样式 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(52, 1fr); /* 每行52个格子，代表一年52周 */
+            gap: 2px; /* 格子间距 */
+            margin-top: 20px;
+        }
+
+        /* 格子默认样式 */
+        .week {
+            width: 100%;
+            padding-top: 100%; /* 使格子保持正方形 */
+            background: #e5e5ea; /* 【格子默认颜色】未用时间的颜色，浅灰 */
+            border-radius: 2px;
+        }
+
+        /* 格子填充样式 */
+        .week.filled {
+            background: #373636; /* 【格子填充颜色】已用时间的颜色，蓝色 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>人生死亡时间表</h1>
+            <h2>Life Countdown Table</h2>
+        </div>
+        
+        <div class="input-section" id="inputSection">
+            <div class="form-group">
+                <label>出生日期 / Birth Date</label>
+                <input type="date" id="birthDate" required>
+            </div>
+            <div class="form-group">
+                <label>预期寿命 / Expected Lifespan (years)</label>
+                <input type="number" id="lifeSpan" value="80" min="1" max="150" required>
+            </div>
+            <button id="generateBtn">生成表格 / Generate Table</button>
+        </div>
+
+        <div class="result-section" id="resultSection" style="display: none;">
+            <div class="progress-section">
+                <div class="progress-wrapper">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="grid-container" id="grid"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBtn = document.getElementById('generateBtn');
+            const inputSection = document.getElementById('inputSection');
+            const resultSection = document.getElementById('resultSection');
+            const grid = document.getElementById('grid');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            generateBtn.addEventListener('click', () => {
+                const birthDate = new Date(document.getElementById('birthDate').value);
+                const lifeSpan = parseInt(document.getElementById('lifeSpan').value);
+                
+                if (!birthDate || isNaN(lifeSpan)) {
+                    alert('请输入有效的出生日期和寿命');
+                    return;
+                }
+
+                generateLifeTable(birthDate, lifeSpan);
+                inputSection.style.display = 'none';
+                resultSection.style.display = 'block';
+            });
+
+            function generateLifeTable(birthDate, lifeSpan) {
+                const today = new Date('2025-03-12');
+                const totalWeeks = lifeSpan * 52;
+                const weeksLived = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24 * 7));
+                const percentage = (weeksLived / totalWeeks) * 100;
+
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `${percentage.toFixed(1)}%`;
+
+                grid.innerHTML = '';
+                for (let i = 0; i < totalWeeks; i++) {
+                    const week = document.createElement('div');
+                    week.className = 'week';
+                    if (i < weeksLived) {
+                        week.classList.add('filled');
+                    }
+                    grid.appendChild(week);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
