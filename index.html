@@ -90,7 +90,23 @@
 
         /* 格子填充样式 */
         .week.filled {
-            background: #373636; /* 【格子填充颜色】已用时间的颜色，蓝色 */
+            background: #3e3e3e; /* 【格子填充颜色】已用时间的颜色，蓝色 */
+        }
+
+        /* 名言区域样式 */
+        .quote-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .quote-text {
+            font-size: 18px;
+            font-style: italic;
+            color: #1d1d1f;
+            margin: 0;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -101,10 +117,15 @@
             <h2>Life Countdown Table</h2>
         </div>
         
+        <div class="quote-section">
+            <p class="quote-text" id="quoteText"></p>
+        </div>
+
         <div class="input-section" id="inputSection">
             <div class="form-group">
                 <label>出生日期 / Birth Date</label>
-                <input type="date" id="birthDate" required>
+                <input type="date" id="birthDate" required lang="en">
+                <small style="color: #6e6e73; font-size: 12px; margin-top: 4px; display: block;">请选择日期或直接输入，格式：YYYY/MM/DD</small>
             </div>
             <div class="form-group">
                 <label>预期寿命 / Expected Lifespan (years)</label>
@@ -126,6 +147,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const quotes = [
+                "Time is free, but it's priceless. You can't own it, but you can use it. You can't keep it, but you can spend it. Once you've lost it, you can never get it back.",
+                "Yesterday is history, tomorrow is a mystery, but today is a gift. That's why it's called the present.",
+                "The two most powerful warriors are patience and time.",
+                "Time is what we want most, but what we use worst.",
+                "Lost time is never found again.",
+                "Time and tide wait for no man.",
+                "The future depends on what you do today.",
+                "Don't wait. The time will never be just right.",
+                "Time is the wisest counselor of all.",
+                "Life is not just about passing time. Life is about moments."
+            ];
+
+            // 随机选择一条名言
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('quoteText').textContent = randomQuote;
+
             const generateBtn = document.getElementById('generateBtn');
             const inputSection = document.getElementById('inputSection');
             const resultSection = document.getElementById('resultSection');
